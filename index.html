@@ -503,14 +503,10 @@
         
         <!-- LÍNEAS CONECTORAS SVG -->
         <svg class="connector-lines" xmlns="http://www.w3.org/2000/svg">
-            <!-- Línea desde Características hacia abajo -->
-            <line class="connector-line" x1="50%" y1="18%" x2="50%" y2="30%" />
-            
-            <!-- Línea desde sección media hacia centro -->
-            <line class="connector-line" x1="50%" y1="52%" x2="50%" y2="60%" />
-            
-            <!-- Línea desde centro hacia Tipos -->
-            <line class="connector-line" x1="50%" y1="70%" x2="50%" y2="82%" />
+            <!-- Las líneas se dibujarán dinámicamente con JavaScript -->
+            <path id="line1" class="connector-line" d="" />
+            <path id="line2" class="connector-line" d="" />
+            <path id="line3" class="connector-line" d="" />
         </svg>
 
         <!-- CARACTERÍSTICAS (ARRIBA - HORIZONTAL) -->
@@ -828,6 +824,55 @@
         </div>
 
     </div>
+
+    <script>
+        // Función para dibujar líneas conectoras
+        function drawConnectors() {
+            const mindmap = document.querySelector('.mindmap');
+            const caracteristicas = document.querySelector('.caracteristicas');
+            const middleSection = document.querySelector('.middle-section');
+            const centerNode = document.querySelector('.center-node');
+            const tipos = document.querySelector('.tipos');
+            
+            const mindmapRect = mindmap.getBoundingClientRect();
+            
+            // Función helper para obtener posición relativa
+            function getRelativePosition(element) {
+                const rect = element.getBoundingClientRect();
+                return {
+                    top: rect.top - mindmapRect.top,
+                    bottom: rect.bottom - mindmapRect.top,
+                    left: rect.left - mindmapRect.left,
+                    right: rect.right - mindmapRect.left,
+                    centerX: (rect.left + rect.right) / 2 - mindmapRect.left,
+                    centerY: (rect.top + rect.bottom) / 2 - mindmapRect.top
+                };
+            }
+            
+            const caracPos = getRelativePosition(caracteristicas);
+            const middlePos = getRelativePosition(middleSection);
+            const centerPos = getRelativePosition(centerNode);
+            const tiposPos = getRelativePosition(tipos);
+            
+            // Línea 1: Características → Middle
+            const line1 = document.getElementById('line1');
+            line1.setAttribute('d', `M ${caracPos.centerX} ${caracPos.bottom} L ${middlePos.centerX} ${middlePos.top}`);
+            
+            // Línea 2: Middle → Centro
+            const line2 = document.getElementById('line2');
+            line2.setAttribute('d', `M ${middlePos.centerX} ${middlePos.bottom} L ${centerPos.centerX} ${centerPos.top}`);
+            
+            // Línea 3: Centro → Tipos
+            const line3 = document.getElementById('line3');
+            line3.setAttribute('d', `M ${centerPos.centerX} ${centerPos.bottom} L ${tiposPos.centerX} ${tiposPos.top}`);
+        }
+        
+        // Dibujar al cargar
+        window.addEventListener('load', drawConnectors);
+        
+        // Redibujar al cambiar tamaño de ventana
+        window.addEventListener('resize', drawConnectors);
+    </script>
 
 </body>
 </html>
