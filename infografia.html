@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Mental: Liderazgo en Ingeniería de Software</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --c-center: #2563eb;
+            --c-green: #10b981;
+            --c-orange: #f59e0b;
+            --c-purple: #8b5cf6;
+            --c-red: #ef4444;
+            --c-cyan: #06b6d4;
+            --c-dark: #1e293b;
+            --c-light: #f8fafc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--c-dark);
+            min-height: 100vh;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
+
+        /* CONTENEDOR PRINCIPAL */
+        .mindmap {
+            max-width: 2400px;
+            margin: 0 auto;
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 50px;
+            grid-template-areas: 
+                "caracteristicas"
+                "middle"
+                "center"
+                "tipos";
+        }
+
+        /* LÍNEAS CONECTORAS */
+        .connector-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .connector-line {
+            stroke: rgba(255, 255, 255, 0.6);
+            stroke-width: 6;
+            fill: none;
+            stroke-dasharray: 15 8;
+            animation: dash 20s linear infinite;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -150;
+            }
+        }
+
+        /* NODO CENTRAL */
+        .center-node {
+            grid-area: center;
+            position: relative;
+            width: 450px;
+            height: 450px;
+            margin: 0 auto;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 8px solid #fbbf24;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .center-node img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        .center-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .center-title {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--c-center);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .center-desc {
+            font-size: 1.1rem;
+            color: #475569;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .center-roles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .role-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* SECCIONES */
+        .section {
+            background: white;
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 5;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid;
+        }
+
+        .section-title {
+            font-size: 1.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* CARACTERÍSTICAS - HORIZONTAL ARRIBA */
+        .caracteristicas { 
+            grid-area: caracteristicas; 
+            border-top: 6px solid var(--c-green); 
+        }
+        .caracteristicas .section-header { border-color: var(--c-green); }
+        .caracteristicas .section-title { color: var(--c-green); }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 15px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border: 2px solid var(--c-green);
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            min-height: 280px;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .feature-img {
+            width: 100%;
+            flex: 1;
+            min-height: 200px;
+            object-fit: contain;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            background: #ffffff;
+            padding: 3px;
+        }
+
+        .feature-title {
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #065f46;
+            margin-bottom: 5px;
+        }
+
+        .feature-desc {
+            font-size: 0.75rem;
+            color: #047857;
+        }
+
+        /* CONTENEDOR MEDIO (ENTORNOS + INGENIERÍA) */
+        .middle-section {
+            grid-area: middle;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+        }
+
+        /* ENTORNOS */
+        .entornos { border-top: 6px solid var(--c-purple); }
+        .entornos .section-header { border-color: var(--c-purple); }
+        .entornos .section-title { color: var(--c-purple); }
+
+        .env-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .env-circle {
+            position: relative;
+            width: 100%;
+            padding-top: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--c-purple);
+            box-shadow: 0 3px 10px rgba(139, 92, 246, 0.3);
+            transition: transform 0.3s;
+        }
+
+        .env-circle:hover {
+            transform: scale(1.08);
+        }
+
+        .env-circle img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .env-label {
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(139, 92, 246, 0.9);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        /* INGENIERÍA */
+        .future { border-top: 6px solid var(--c-cyan); }
+        .future .section-header { border-color: var(--c-cyan); }
+        .future .section-title { color: var(--c-cyan); }
+
+        .roadmap {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .step {
+            background: linear-gradient(135deg, #ecfeff, #cffafe);
+            border: 3px solid var(--c-cyan);
+            border-radius: 16px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            transition: transform 0.3s;
+            min-height: 220px;
+        }
+
+        .step:hover {
+            transform: translateX(8px);
+            box-shadow: 0 6px 16px rgba(6, 182, 212, 0.3);
+        }
+
+        .step-img {
+            width: 200px;
+            height: 200px;
+            min-width: 200px;
+            border-radius: 16px;
+            object-fit: contain;
+            border: 3px solid var(--c-cyan);
+            background: white;
+            padding: 3px;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            flex: 1;
+        }
+
+        .step-text h4 {
+            color: #0e7490;
+            font-size: 1.15rem;
+            margin-bottom: 5px;
+            font-weight: 800;
+        }
+
+        .step-text p {
+            font-size: 0.95rem;
+            color: #155e75;
+            font-weight: 600;
+        }
+
+        /* TIPOS DE LIDERAZGO */
+        .tipos { grid-area: tipos; border-top: 6px solid var(--c-orange); }
+        .tipos .section-header { border-color: var(--c-orange); }
+        .tipos .section-title { color: var(--c-orange); }
+
+        .types-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .type-card {
+            background: white;
+            border: 3px solid #fed7aa;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+        }
+
+        .type-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(245, 158, 11, 0.4);
+        }
+
+        .type-img-container {
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+            background: white;
+            padding: 10px;
+        }
+
+        .type-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .type-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            z-index: 1;
+        }
+
+        .type-content {
+            padding: 15px;
+        }
+
+        .type-name {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #92400e;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .type-desc {
+            font-size: 0.85rem;
+            color: #78350f;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .type-tags {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .tag {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-align: left;
+        }
+
+        .tag.pro {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .tag.con {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .tag.highlight {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1800px) {
+            .features-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
+        @media (max-width: 1400px) {
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .middle-section {
+                grid-template-columns: 1fr;
+            }
+
+            .center-node {
+                width: 350px;
+                height: 350px;
+            }
+
+            .types-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .types-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .env-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .center-node {
+                width: 280px;
+                height: 280px;
+            }
+
+            .center-title {
+                font-size: 2rem;
+            }
+            
+            .feature-card {
+                min-height: 250px;
+            }
+            
+            .feature-img {
+                min-height: 180px;
+            }
+            
+            .step-img {
+                width: 130px;
+                height: 130px;
+                min-width: 130px;
+            }
+            
+            .step {
+                min-height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mindmap">
+        
+        <!-- LÍNEAS CONECTORAS SVG -->
+        <svg class="connector-lines" xmlns="http://www.w3.org/2000/svg">
+            <!-- Línea desde Características hacia abajo -->
+            <line class="connector-line" x1="50%" y1="18%" x2="50%" y2="30%" />
+            
+            <!-- Línea desde sección media hacia centro -->
+            <line class="connector-line" x1="50%" y1="52%" x2="50%" y2="60%" />
+            
+            <!-- Línea desde centro hacia Tipos -->
+            <line class="connector-line" x1="50%" y1="70%" x2="50%" y2="82%" />
+        </svg>
+
+        <!-- CARACTERÍSTICAS (ARRIBA - HORIZONTAL) -->
+        <div class="section caracteristicas">
+            <div class="section-header">
+                <div class="section-title">✅ Características</div>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <img src="confianza.png" alt="Confianza" class="feature-img">
+                    <div class="feature-title">🛡️ Confianza</div>
+                    <div class="feature-desc">Cree en sí mismo y su equipo</div>
+                </div>
+                <div class="feature-card">
+                    <img src="empatia.png" alt="Empatía" class="feature-img">
+                    <div class="feature-title">❤️ Empatía</div>
+                    <div class="feature-desc">Entiende emociones</div>
+                </div>
+                <div class="feature-card">
+                    <img src="proactivo.png" alt="Proactivo" class="feature-img">
+                    <div class="feature-title">⚡ Proactivo</div>
+                    <div class="feature-desc">Se adelanta</div>
+                </div>
+                <div class="feature-card">
+                    <img src="comunicacion.png" alt="Comunicación" class="feature-img">
+                    <div class="feature-title">💬 Comunicación</div>
+                    <div class="feature-desc">Clara y asertiva</div>
+                </div>
+                <div class="feature-card">
+                    <img src="visionario.png" alt="Visionario" class="feature-img">
+                    <div class="feature-title">🔮 Visionario</div>
+                    <div class="feature-desc">Piensa a futuro</div>
+                </div>
+                <div class="feature-card">
+                    <img src="responsable.png" alt="Responsable" class="feature-img">
+                    <div class="feature-title">🎯 Responsable</div>
+                    <div class="feature-desc">Asume decisiones</div>
+                </div>
+                <div class="feature-card">
+                    <img src="escucha.png" alt="Escucha" class="feature-img">
+                    <div class="feature-title">👂 Escucha</div>
+                    <div class="feature-desc">Activa y real</div>
+                </div>
+                <div class="feature-card">
+                    <img src="motivador.png" alt="Motivador" class="feature-img">
+                    <div class="feature-title">🔥 Motivador</div>
+                    <div class="feature-desc">Impulsa equipo</div>
+                </div>
+                <div class="feature-card">
+                    <img src="disciplina.png" alt="Disciplina" class="feature-img">
+                    <div class="feature-title">📅 Disciplina</div>
+                    <div class="feature-desc">Constancia</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN MEDIA (ENTORNOS + INGENIERÍA) -->
+        <div class="middle-section">
+            <!-- ENTORNOS -->
+            <div class="section entornos">
+                <div class="section-header">
+                    <div class="section-title">🌎 Entornos</div>
+                </div>
+                <div class="env-grid">
+                    <div class="env-circle">
+                        <img src="entorno-laboral.png" alt="Laboral">
+                        <div class="env-label">💼 Laboral</div>
+                    </div>
+                    <div class="env-circle">
+                        <img src="entorno-social.png" alt="Social">
+                        <div class="env-label">🌐 Social</div>
+                    </div>
+                    <div class="env-circle">
+                        <img src="entorno-academico.png" alt="Académico">
+                        <div class="env-label">🎓 Académico</div>
+                    </div>
+                    <div class="env-circle">
+                        <img src="entorno-familiar.png" alt="Familiar">
+                        <div class="env-label">🏠 Familiar</div>
+                    </div>
+                    <div class="env-circle">
+                        <img src="entorno-politico.png" alt="Político">
+                        <div class="env-label">🏛️ Político</div>
+                    </div>
+                    <div class="env-circle">
+                        <img src="entorno-deportivo.png" alt="Deportivo">
+                        <div class="env-label">⚽ Deportivo</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INGENIERÍA DE SOFTWARE -->
+            <div class="section future">
+                <div class="section-header">
+                    <div class="section-title">🖥️ Ingeniería de Software</div>
+                </div>
+                <div class="roadmap">
+                    <div class="step">
+                        <img src="developer-senior.png" alt="Dev Senior" class="step-img">
+                        <div class="step-text">
+                            <h4>👨‍💻 Developer Senior</h4>
+                            <p>Transformacional + Técnico</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <img src="tech-lead.png" alt="Tech Lead" class="step-img">
+                        <div class="step-text">
+                            <h4>🧑‍💼 Tech Lead</h4>
+                            <p>Liderazgo Situacional 🔄</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <img src="fundador-saas.png" alt="Founder" class="step-img">
+                        <div class="step-text">
+                            <h4>🚀 Fundador SaaS</h4>
+                            <p>Visionario + Transformacional</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <img src="ciberseguridad.png" alt="Ciberseguridad" class="step-img">
+                        <div class="step-text">
+                            <h4>🔐 Especialista Ciberseguridad</h4>
+                            <p>Proactivo + Disciplinado</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NODO CENTRAL (MEDIO) -->
+        <div class="center-node">
+            <img src="liderazgo.png" alt="Liderazgo">
+            <div class="center-content">
+                <div class="center-title">LIDERAZGO</div>
+                <div class="center-desc">Capacidad de influir, guiar y motivar para alcanzar objetivos comunes</div>
+                <div class="center-roles">
+                    <span class="role-badge">👨‍💼 Scrum Master</span>
+                    <span class="role-badge">💻 Tech Lead</span>
+                    <span class="role-badge">📊 PM</span>
+                    <span class="role-badge">🚀 Project Leader</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIPOS DE LIDERAZGO (ABAJO) -->
+        <div class="section tipos">
+            <div class="section-header">
+                <div class="section-title">🔥 8 Tipos de Liderazgo</div>
+            </div>
+            <div class="types-grid">
+                
+                <!-- 1. Autocrático -->
+                <div class="type-card">
+                    <div class="type-img-container">
+                        <img src="autocratico.png" alt="Autocrático" class="type-img">
+                        <div class="type-badge">👑</div>
+                    </div>
+                    <div class="type-content">
+                        <div class="type-name" style="color:#dc2626;">Autocrático</div>
+                        <div class="type-desc">Decide todo solo. "Java. Punto."</div>
+                        <div class="type-tags">
+                            <span class="tag pro">✔ Rápido en crisis</span>
+                            <span class="tag pro">✔ Clara jerarquía</span>
+                            <span class="tag pro">✔ Control total proyecto</span>
+                            <span class="tag con">❌ Mata creatividad</span>
+                            <span class="tag con">❌ Baja motivación equipo</span>
+                            <span class="tag con">❌ No aprovecha talento</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Liberal -->
+                <div class="type-card">
+                    <div class="type-img-container">
+                        <img src="liberal.png" alt="Liberal" class="type-img">
+                        <div class="type-badge">🕊️</div>
+                    </div>
+                    <div class="type-content">
+                        <div class="type-name" style="color:#7c3aed;">Liberal</div>
+                        <div class="type-desc">Deja hacer todo. Sin Code Reviews.</div>
+                        <div class="type-tags">
+                            <span class="tag pro">✔ Libertad total</span>
+                            <span class="tag pro">✔ Fomenta autonomía</span>
+                            <span class="tag pro">✔ Creatividad máxima</span>
+                            <span class="tag con">❌ Caos técnico</span>
+                            <span class="tag con">❌ Falta coordinación</span>
+                            <span class="tag con">❌ Plazos incumplidos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Transaccional -->
+                <div class="type-card">
+                    <div class="type-img-container">
+                        <img src="transaccional.png" alt="Transaccional" class="type-img">
+                        <div class="type-badge">💰</div>
+                    </div>
+                    <div class="type-content">
+                        <div class="type-name" style="color:#b45309;">Transaccional</div>
+                        <div class="type-desc">Recompensas por resultados. Sprint = viernes libre.</div>
+                        <div class="type-tags">
+                            <span class="tag pro">✔ Funciona en ventas</span>
+                            <span class="tag pro">✔ Objetivos claros</span>
+                            <span class="tag pro">✔ Métricas definidas</span>
+                            <span class="tag con">❌ Solo por premio</span>
+                            <span class="tag con">❌ Falta compromiso real</span>
+                            <span class="tag con">❌ Relación superficial</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Servicial -->
+                <div class="type-card">
+                    <div class="type-img-container">
+                        <img src="servicial.png" alt="Servicial" class="type-img">
+                        <div class="type-badge">🤝</div>
+                    </div>
+                    <div class="type-content">
+                        <div class="type-name" style="color:#047857;">Servicial</div>
+                        <div class="type-desc">Sirve al equipo. Elimina bloqueos.</div>
+                        <div class="type-tags">
+                            <span class="tag pro">✔ Genera confianza</span>
+                            <span class="tag pro">✔ Ambiente positivo</span>
+                            <span class="tag pro">✔ Elimina obstáculos</span>
+                            <span class="tag con">❌ Descuida estrategia</span>
+                            <span class="tag con">❌ Puede ser pasivo</span>
+                            <span class="tag con">❌ Falta autoridad</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Carismático -->
+                <div class="type-card">
+                    <div class="type-img-container">
+                        <img src="carismatico.png" alt="Carismático" class="type-img">
+                        <div class="type-badge">⭐</div>
+                    </div>
+                    <div class="type-content">
+                        <div class="type-name" style="color:#b45309;">Carismático</div>
+                        <div class="type-desc">Influye por personalidad. Vende visión sin MVP.</div>
+                        <div class="type-tags">
+                            <span class="tag pro">✔ Alta motivación</span>
+                            <span class="tag pro">✔ Inspirador</span>
+                            <span class="tag pro">✔ Entusiasmo contagioso</span>
+                            <span class="tag con">❌ Dependencia imagen</span>
+                            <span class="tag con">❌ Decisiones emocionales</span>
+                            <span class="tag con">❌ Poco foco técnico</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Transformacional -->
+                <div class="type-card">
+                    <div class="type-img-container">
+                        <img src="transformacional.png" alt="Transformacional" class="type-img">
+                        <div class="type-badge">🚀</div>
+                    </div>
+                    <div class="type-content">
+                        <div class="type-name" style="color:#0e7490;">Transformacional</div>
+                        <div class="type-desc">Motiva e impulsa crecimiento personal.</div>
+                        <div class="type-tags">
+                            <span class="tag highlight">⭐ IDEAL TECH</span>
+                            <span class="tag pro">✔ Desarrollo personal</span>
+                            <span class="tag pro">✔ Visión compartida</span>
+                            <span class="tag pro">✔ Innovación constante</span>
+                            <span class="tag con">❌ Requiere tiempo</span>
+                            <span class="tag con">❌ No funciona en crisis</span>
+                            <span class="tag con">❌ Desgaste emocional</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Democrático -->
+                <div class="type-card">
+                    <div class="type-img-container">
+                        <img src="democratico.png" alt="Democrático" class="type-img">
+                        <div class="type-badge">🗳️</div>
+                    </div>
+                    <div class="type-content">
+                        <div class="type-name" style="color:#1d4ed8;">Democrático</div>
+                        <div class="type-desc">Decide en grupo. React vs Vue.</div>
+                        <div class="type-tags">
+                            <span class="tag pro">✔ Compromiso alto</span>
+                            <span class="tag pro">✔ Diversas perspectivas</span>
+                            <span class="tag pro">✔ Sentido pertenencia</span>
+                            <span class="tag con">❌ Puede ser lento</span>
+                            <span class="tag con">❌ Conflictos de opinión</span>
+                            <span class="tag con">❌ Parálisis por análisis</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. Situacional -->
+                <div class="type-card" style="border-color:#8b5cf6; border-width:4px;">
+                    <div class="type-img-container">
+                        <img src="situacional.png" alt="Situacional" class="type-img">
+                        <div class="type-badge">🎭</div>
+                    </div>
+                    <div class="type-content">
+                        <div class="type-name" style="color:#5b21b6;">Situacional</div>
+                        <div class="type-desc">Se adapta al contexto. Crisis→Autocrático, Plan→Democrático</div>
+                        <div class="type-tags">
+                            <span class="tag highlight">🏆 MÁS PODEROSO</span>
+                            <span class="tag pro">✔ Máxima flexibilidad</span>
+                            <span class="tag pro">✔ Efectivo siempre</span>
+                            <span class="tag pro">✔ Lee el contexto</span>
+                            <span class="tag con">❌ Difícil de dominar</span>
+                            <span class="tag con">❌ Puede confundir equipo</span>
+                            <span class="tag con">❌ No es natural para todos</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
